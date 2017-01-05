@@ -16,12 +16,15 @@ import EventController from './controllers/EventController';
 
   router.route('/api/v1/event')
     .post((req, res) => {
-      // Create event.
-      // Return event ID
-      res.json({});
+      EventController.createEvent(req).then((event) => {
+        res.json(event);
+      }).catch((error) => {
+        console.log(error); // TODO Better erorr logging
+        res.json({});
+      });
     });
 
-  router.route('/api/v1/event/list') // eslint-disable no-useless-escape
+  router.route('/api/v1/event/list')
     .get((req, res) => {
       // Return list of events with title and id only
       EventController.getEvents().then((events) => {
