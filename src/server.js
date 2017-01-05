@@ -13,6 +13,7 @@ import EventController from './controllers/EventController';
 
   app.use(bodyParser.json());
   app.use(router);
+  app.set('json spaces', 2); // Pretty print
 
   router.route('/api/v1/event')
     .post((req, res) => {
