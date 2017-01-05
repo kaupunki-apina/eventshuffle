@@ -1,4 +1,3 @@
-"use strict";
 
 import mongoose from 'mongoose';
 
@@ -13,4 +12,6 @@ const EventSchema = new Schema({
   }],
 });
 
-export default mongoose.model('Event', EventSchema);
+const Event = mongoose.model('Event', EventSchema);
+
+export default Event;
