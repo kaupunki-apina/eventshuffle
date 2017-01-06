@@ -8,7 +8,7 @@ const VoteSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  dates: {
+  votes: {
     type: [Date],
     requred: true,
     get: dateUtil.formatDateArray,

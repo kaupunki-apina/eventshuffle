@@ -41,10 +41,10 @@ const EventController = {
   voteOnEvent: (id, data) => new Promise((resolve, reject) => {
     Event.findOne({ _id: id }, { id: 1, name: 1, dates: 1, votes: 1 }, (error, event) => {
       if (!error) {
-        event.vote(new Vote(data)).then(() =>
-          event.save(),
-        ).then(() =>
-          resolve(event),
+        event.vote(new Vote(data)).then(modifiedEvent =>
+          modifiedEvent.save(),
+        ).then(savedEvent =>
+          resolve(savedEvent),
         ).catch((voteError) => {
           reject(voteError);
         });
