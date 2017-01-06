@@ -5,11 +5,11 @@ import dateUtil from '../utils/dateUtil';
 
 const isValidDate = (voteDate, event) =>
   event.dates.some(eventDate =>
-    dateUtil.sameDay(voteDate, eventDate),
+    dateUtil.isSameDate(voteDate, eventDate),
   );
 
 const addVote = (date, event, voter) => {
-  const votes = event.votes.find(element => dateUtil.sameDay(element.date, date));
+  const votes = event.votes.find(element => dateUtil.isSameDate(element.date, date));
 
   if (votes === undefined) {
     event.votes.push({
@@ -21,7 +21,7 @@ const addVote = (date, event, voter) => {
   }
 };
 
-// Internal schema used for a nested object.
+
 const EventVoteSchema = new mongoose.Schema({
   _id: {
     id: false,
@@ -65,7 +65,7 @@ const EventSchema = new mongoose.Schema({
     transform: (doc, ret) => {
       ret.id = ret._id;
       delete ret._id;
-      if (!!doc.dates) ret.dates = doc.dates; 
+      if (doc.dates) ret.dates = doc.dates; 
     },
     /* eslint-enable */
   },
@@ -73,15 +73,15 @@ const EventSchema = new mongoose.Schema({
 
 EventSchema.virtual('suitableDates').get(function() { // eslint-disable-line
   let suitableDates = [];
-  let max = 0;
+  let maxVoteCount = 0;
 
   this.votes.forEach((vote) => {
     const numOfVoters = vote.people.length;
-    if (numOfVoters > max) {
-      max = numOfVoters;
+    if (numOfVoters > maxVoteCount) {
+      maxVoteCount = numOfVoters;
       suitableDates = [];
       suitableDates.push(vote);
-    } else if (numOfVoters === max) {
+    } else if (numOfVoters === maxVoteCount) {
       suitableDates.push(vote);
     }
   });
