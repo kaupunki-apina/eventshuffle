@@ -3,10 +3,10 @@ import http from 'http';
 import express from 'express';
 import bodyParser from 'body-parser';
 import EventController from './controllers/EventController';
+import config from './config';
 
 
 (function () {
-  const PORT = process.env.PORT || 8080;
   const app = express();
   const server = http.createServer(app);
   const router = express.Router();
@@ -20,26 +20,29 @@ import EventController from './controllers/EventController';
       EventController.createEvent(req).then((event) => {
         res.json(event);
       }).catch((error) => {
-        console.log(error); // TODO Better erorr logging
+        console.log(error); // TODO Better error logging
         res.json({});
       });
     });
 
   router.route('/api/v1/event/list')
     .get((req, res) => {
-      // Return list of events with title and id only
       EventController.getEvents().then((events) => {
         res.json(events);
       }).catch((error) => {
-        console.log(error); // TODO Better erorr logging
+        console.log(error); // TODO Better error logging
         res.json([]);
       });
     });
 
   router.route('/api/v1/event/:id')
     .get((req, res) => {
-      // Return a signle event
-      res.json({});
+      EventController.getEvent(req.params.id).then((event) => {
+        res.json(event);
+      }).catch((error) => {
+        console.log('error: ', error); // TODO Better error logging
+        res.json({});
+      });
     });
 
   router.route('/api/v1/event/:id/vote')
@@ -54,5 +57,5 @@ import EventController from './controllers/EventController';
       res.json({});
     });
 
-  server.listen(PORT, () => console.log('Server listening on: http://localhost:%s', PORT));
+  server.listen(config.port, () => console.log('Server listening on: http://localhost:%s', config.port));
 }());
