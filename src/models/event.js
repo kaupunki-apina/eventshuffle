@@ -2,10 +2,28 @@
 import mongoose from 'mongoose';
 import dateUtil from '../utils/dateUtil';
 
-const isValidDate = (voteDate, event) =>
-  event.dates.some(eventDate =>
-    dateUtil.sameDay(voteDate, eventDate),
-  );
+// Internal schema used for nested objects.
+const EventVoteSchema = new mongoose.Schema({
+  _id: {
+    id: false,
+  },
+  date: {
+    type: Date,
+    get: dateUtil.formatDate,
+  },
+  people: {
+    type: [String],
+    default: [],
+  },
+}, {
+  toJSON: {
+    /*eslint-disable */
+    transform: (doc, ret) => {
+      ret.date = doc.date;
+    },
+  },
+  /*eslint-enable */
+});
 
 
 const EventSchema = new mongoose.Schema({
@@ -18,28 +36,30 @@ const EventSchema = new mongoose.Schema({
     required: true,
     get: dateUtil.formatDateArray,
   },
-  votes: [{
-    date: {
-      type: Date,
-      get: dateUtil.formatDate,
-    },
-    people: [String],
-  }],
+  votes: {
+    type: [EventVoteSchema],
+    default: [],
+  },
 }, {
   toJSON: {
+    /*eslint-disable */
     transform: (doc, ret) => {
-      ret.id = ret._id;                       // eslint-disable-line
-      delete ret._id;                         // eslint-disable-line
-      if (!!doc.dates) ret.dates = doc.dates; // eslint-disable-line
-      if (!!doc.votes) ret.votes = doc.votes; // eslint-disable-line
+      ret.id = ret._id;
+      delete ret._id;
+      if (!!doc.dates) ret.dates = doc.dates; 
     },
+    /*eslint-enable */
   },
 });
 
-EventSchema.methods.vote = vote => new Promise((resolve, reject) => {
-  console.log('this', this.model, 'vote', vote);
-  resolve(this);
-});
+EventSchema.methods.vote = (vote) => {
+  const event = this;
+
+  return new Promise((resolve) => {
+    resolve(event);
+  });
+};
+
 const Event = mongoose.model('Event', EventSchema);
 
 
