@@ -57,8 +57,12 @@ import config from './config';
 
   router.route('/api/v1/event/:id/results')
     .get((req, res) => {
-      // Return the event along with the most voted on dates (and voters).
-      res.json({});
+      EventController.getEventResults(req.params.id).then((results) => {
+        res.json(results);
+      }).catch((error) => {
+        console.log('error', error); // TODO Better error logging
+        res.json({});
+      });
     });
 
   server.listen(config.port, () => console.log('Server listening on: http://localhost:%s', config.port));

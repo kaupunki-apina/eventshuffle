@@ -11,7 +11,7 @@ mongoose.connect(config.dbUri);
 const EventController = {
   createEvent: data => new Promise((resolve, reject) => {
     new Event(data).save().then((event) => {
-      resolve(resolve({ id: event.id }));
+      resolve({ id: event.id });
     }).catch((error) => {
       reject(error);
     });
@@ -54,8 +54,18 @@ const EventController = {
     });
   }),
 
-  getEventResults: id => new Promise((resolve, reject) => {
-    resolve({});
+  getEventResults: id => new Promise((resolve, reject) => { // eslint-disable-line
+    Event.findOne({ _id: id }, (error, event) => {
+      if (!error) {
+        event.getResults().then((results) => {
+          resolve(results);
+        }).catch((eventError) => {
+          reject(eventError);
+        });
+      } else {
+        reject(error);
+      }
+    });
   }),
 };
 

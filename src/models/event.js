@@ -21,7 +21,7 @@ const addVote = (date, event, voter) => {
   }
 };
 
-// Internal schema used for nested objects.
+// Internal schema used for a nested object.
 const EventVoteSchema = new mongoose.Schema({
   _id: {
     id: false,
@@ -40,8 +40,8 @@ const EventVoteSchema = new mongoose.Schema({
     transform: (doc, ret) => {
       ret.date = doc.date;
     },
+    /* eslint-enable */
   },
-  /* eslint-enable */
 });
 
 
@@ -62,6 +62,7 @@ const EventSchema = new mongoose.Schema({
 }, {
   toJSON: {
     /* eslint-disable */
+    virtuals: true,
     transform: (doc, ret) => {
       ret.id = ret._id;
       delete ret._id;
@@ -71,14 +72,43 @@ const EventSchema = new mongoose.Schema({
   },
 });
 
+EventSchema.virtual('suitableDates').get(function() { // eslint-disable-line
+  let suitableDates = [];
+  let max = 0;
+
+  this.votes.forEach((vote) => {
+    const numOfVoters = vote.people.length;
+    if (numOfVoters > max) {
+      max = numOfVoters;
+      suitableDates = [];
+      suitableDates.push(vote);
+    } else if (numOfVoters === max) {
+      suitableDates.push(vote);
+    }
+  });
+
+  return suitableDates;
+});
+
 // Non-arrow function so that "this" may be used.
 EventSchema.methods.vote = function vote(castedVote) {
   const event = this;
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => { // eslint-disable-line
     castedVote.votes.forEach((date) => {
       if (isValidDate(date, event)) addVote(date, event, castedVote.name);
     });
     resolve(event);
+  });
+};
+
+EventSchema.methods.getResults = function getResults() {
+  const event = this;
+  return new Promise((resolve, reject) => { // eslint-disable-line
+    resolve({
+      id: event.id,
+      name: event.name,
+      suitableDates: event.suitableDates,
+    });
   });
 };
 
