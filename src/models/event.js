@@ -1,11 +1,12 @@
 
-import moment from 'moment';
 import mongoose from 'mongoose';
-import config from '../config';
+import dateUtil from '../utils/dateUtil';
 
+const isValidDate = (voteDate, event) =>
+  event.dates.some(eventDate =>
+    dateUtil.sameDay(voteDate, eventDate),
+  );
 
-const formatDate = date => (date ? moment(date).format(config.dateFormat) : null);
-const formatDateArray = dates => (dates ? dates.map(date => formatDate(date)) : null);
 
 const EventSchema = new mongoose.Schema({
   name: {
@@ -15,12 +16,12 @@ const EventSchema = new mongoose.Schema({
   dates: {
     type: [Date],
     required: true,
-    get: formatDateArray,
+    get: dateUtil.formatDateArray,
   },
   votes: [{
     date: {
       type: Date,
-      get: formatDate,
+      get: dateUtil.formatDate,
     },
     people: [String],
   }],
@@ -35,7 +36,10 @@ const EventSchema = new mongoose.Schema({
   },
 });
 
-
+EventSchema.methods.vote = vote => new Promise((resolve, reject) => {
+  console.log('this', this.model, 'vote', vote);
+  resolve(this);
+});
 const Event = mongoose.model('Event', EventSchema);
 
 

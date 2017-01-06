@@ -17,7 +17,7 @@ import config from './config';
 
   router.route('/api/v1/event')
     .post((req, res) => {
-      EventController.createEvent(req).then((event) => {
+      EventController.createEvent(req.body).then((event) => {
         res.json(event);
       }).catch((error) => {
         console.log(error); // TODO Better error logging
@@ -46,9 +46,13 @@ import config from './config';
     });
 
   router.route('/api/v1/event/:id/vote')
-    .get((req, res) => {
-      // Return the voted on event
-      res.json({});
+    .post((req, res) => {
+      EventController.voteOnEvent(req.params.id, req.body).then((event) => {
+        res.json(event);
+      }).catch((error) => {
+        console.log('error', error); // TODO Better error logging
+        res.json({});
+      });
     });
 
   router.route('/api/v1/event/:id/results')
