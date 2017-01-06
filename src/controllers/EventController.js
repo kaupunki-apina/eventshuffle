@@ -2,7 +2,7 @@
 import mongoose from 'mongoose';
 import config from '../config';
 import Event from '../models/Event';
-import Vote from '../models/Vote';
+import Ballot from '../models/Ballot';
 
 mongoose.Promise = global.Promise;
 mongoose.connect(config.dbUri);
@@ -41,7 +41,7 @@ const EventController = {
   voteOnEvent: (id, data) => new Promise((resolve, reject) => {
     Event.findOne({ _id: id }, { id: 1, name: 1, dates: 1, votes: 1 }, (error, event) => {
       if (!error) {
-        event.vote(new Vote(data)).then(modifiedEvent =>
+        event.castBallot(new Ballot(data)).then(modifiedEvent =>
           modifiedEvent.save(),
         ).then(savedEvent =>
           resolve(savedEvent),

@@ -3,7 +3,7 @@
 import mongoose from 'mongoose';
 import dateUtil from '../utils/dateUtil';
 
-const VoteSchema = new mongoose.Schema({
+const BallotSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -15,7 +15,7 @@ const VoteSchema = new mongoose.Schema({
   },
 });
 
-const Vote = mongoose.model('Vote', VoteSchema);
+const Ballot = mongoose.model('Ballot', BallotSchema);
 
 
-export default Vote;
+export default Ballot;

@@ -62,7 +62,6 @@ const EventSchema = new mongoose.Schema({
 }, {
   toJSON: {
     /* eslint-disable */
-    virtuals: true,
     transform: (doc, ret) => {
       ret.id = ret._id;
       delete ret._id;
@@ -91,11 +90,11 @@ EventSchema.virtual('suitableDates').get(function() { // eslint-disable-line
 });
 
 // Non-arrow function so that "this" may be used.
-EventSchema.methods.vote = function vote(castedVote) {
+EventSchema.methods.castBallot = function castBallot(ballot) {
   const event = this;
   return new Promise((resolve, reject) => { // eslint-disable-line
-    castedVote.votes.forEach((date) => {
-      if (isValidDate(date, event)) addVote(date, event, castedVote.name);
+    ballot.votes.forEach((date) => {
+      if (isValidDate(date, event)) addVote(date, event, ballot.name);
     });
     resolve(event);
   });
